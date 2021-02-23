@@ -9,7 +9,7 @@ library(data.table)
 library(dplyr)
 library(ggplot2)
 
-setwd('~/Desktop/research/microbial/')
+setwd('~/Desktop/research/rarefaction/')
 results_dir <- 'deseq_results/'
 
 nspp <- 2000
@@ -515,6 +515,17 @@ proc.time() - ptm
 
 fwrite(results_realistic, file=paste0(results_dir, 'no_perm.csv'))
 
+
+results_realistic <- read.csv(paste0(results_dir, 'no_perm.csv'))
+
+compute_typeI_error <- function(result, data_type='original') {
+  result$sim_num <- rep(1:num_sim, each=nspp * 2)
+  (result %>% 
+      filter(data==data_type) %>%
+      group_by(sim_num) %>% 
+      summarize(typeIerror=mean(p_val < 0.05, na.rm=TRUE)))$typeIerror
+}
+
 typeIerror_realistic_perm <- 
   compute_typeI_error(result=results_realistic,
                       data_type='original')
@@ -539,6 +550,18 @@ ggplot(df_realistic_summary, aes(x=data, y=mean_typeIerror)) +
   geom_hline(yintercept=0.05, lty=2) +
   ggtitle('Type I error rates for differential abundance testing\nDESeq2 + permutation inference w/ simluations based on real data') +
   theme(text=element_text(size=18)) +
+  ylim(c(0, 0.25))
+dev.off()
+
+
+pdf('deseq_results/deseq_realistic_type_I_error_resized.pdf',
+    width=12)
+ggplot(df_realistic_summary, aes(x=data, y=mean_typeIerror)) +
+  geom_point() +
+  geom_errorbar(aes(ymax = U, ymin = L), width = 0.5) +
+  ylab('95% CI of Type I error rate') +
+  geom_hline(yintercept=0.05, lty=2) +
+  theme(text=element_text(size=28)) +
   ylim(c(0, 0.25))
 dev.off()
 
