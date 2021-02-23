@@ -8,4 +8,4 @@ This repository contains scripts for simluation studies and data analysis for th
 - `sim_deseq.R`: Type I error simulation studies for DESeq2 with hypothetical scenarios and realistic data; remark: this script takes almost a day to run
 - `sim_deseq_100.R`: Type I error simulation studies with sample size n = 100; check if the results are similar to n = 30
 - `sim_richness.R`: Type I error simulation studies for species richness comparisons
-- `sim_studies_with_real_data.R`: power simulation studies
+- `sim_power_studies_with_real_data.R`: power simulation studies using real world data
